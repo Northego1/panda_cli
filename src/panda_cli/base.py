@@ -32,7 +32,7 @@ class Base(BaseModel):
         """Run CLI."""
         raise NotImplementedError
 
-    def __call__(self) -> None:
+    def __exec__(self) -> None:
         """Command entry point."""
         raise NotImplementedError
 
@@ -125,7 +125,7 @@ class BaseCommand(Base):
                     converted[k] = v
 
             instance = cls(**converted)
-            return instance()
+            return instance.__exec__()
 
         return click.Command(
             name=cls._cli_name(_field_name),
@@ -160,7 +160,7 @@ class BaseGroup(Base):
             else:
                 group_params.append(cls._field_to_option(field_name, field, ann))
 
-        def _callback(**kwargs: t.Any) -> t.Any:
+        def __exec__(**kwargs: t.Any) -> t.Any:
             filtered = {k: v for k, v in kwargs.items() if k in option_fields}
             if not filtered:
                 return
@@ -171,12 +171,12 @@ class BaseGroup(Base):
                     converted[k] = dict(v)
                 else:
                     converted[k] = v
-            return cls(**converted)()
+            return cls(**converted).__exec__()
 
         group = click.Group(
             name=cls._cli_name(_field_name),
             params=group_params,
-            callback=_callback,
+            callback=__exec__,
             invoke_without_command=True,
             help=cls.__doc__,
         )

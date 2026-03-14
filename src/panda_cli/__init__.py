@@ -3,4 +3,4 @@ from .option import Option
 
 __all__ = ["BaseCommand", "BaseGroup", "Option", "Config"]
 
-__version__ = "0.4.0"
+__version__ = "0.2.0"

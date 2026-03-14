@@ -1,9 +1,13 @@
 from panda_cli import BaseCommand, Option, BaseGroup
+from panda_cli import Config
 
 
 
-class WebCli(BaseCommand):
+class WebCli(BaseCommand): 
+    """ Web server """ # automaticly add to web --help
     __cli_name__ = "web"
+
+    config=Config(fields_name_to_flag=True)  # if True auto gen flag by field name host -> --host
 
     host: str = Option(
         "--host",
@@ -16,12 +20,18 @@ class WebCli(BaseCommand):
         default=8000,
     )
 
-    value: dict[str, str]
+    methods: list[str] # --methods GET --methods POST -> ['GET', 'POST']
 
-    def __call__(self) -> None:
+    map: dict[str, str] # --map key=value --map key2=value2 -> {'key': 'value', 'key2': 'value2'}
+
+    def __exec__(self) -> None:
+        """ Automaticly runs when command is called """
+    
         print(f"Host: {self.host}")
         print(f"Port: {self.port}")
-        print(f"Value: {self.value}")
+        print(f"Methods: {self.methods}")
+        print(f"Map: {self.map}")
+
 
 class MainCli(BaseGroup):
     __cli_name__ = "main"
@@ -31,7 +41,7 @@ class MainCli(BaseGroup):
 
 
 def main():
-    cli = MainCli.run()
+    MainCli.run()
 
 
 if __name__ == "__main__":
